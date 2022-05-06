@@ -15,7 +15,8 @@ from functools import partial
 from niviz_rater.api import apiRoutes
 from niviz_rater.db import fetch_db_from_config
 from niviz_rater.index import build_index
-from niviz_rater.utils import get_qc_bidsfiles, update_bids_configuration
+from niviz_rater.utils import (get_qc_bidsfiles, update_bids_configuration,
+                               get_datman_config)
 
 from niviz_rater.validation import validate_config
 
@@ -133,6 +134,13 @@ def main():
                         default="niviz.db",
                         help="Path to store SQLite DB containing state")
 
+    parser.add_argument("--datman-config",
+                        type=Path,
+                        required=False,
+                        help="Path to datman/dashboard config json. If"
+                        " provided allows niviz-rater to be served by"
+                        " datman's QC dashboard.")
+
     subparsers = parser.add_subparsers(help='sub-command help')
     create_db_parser = subparsers.add_parser('initialize_db',
                                              help='Initialize database')
@@ -162,6 +170,7 @@ def main():
     bids_files = get_qc_bidsfiles(args.base_directory, qc_spec)
 
     # Setup application configuration and DB
+    app.config['datman_config'] = get_datman_config(args.datman_config)
     app.config['niviz_rater.base_path'] = args.base_directory
     app.config['niviz_rater.db.file'] = args.db_file
 

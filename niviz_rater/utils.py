@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-from typing import List, Iterable, Optional
+from typing import List, Iterable, Optional, Dict
 
 import bids.config
 from bids.layout import BIDSLayout, add_config_paths
@@ -36,3 +36,12 @@ def get_qc_bidsfiles(qc_dataset: str, qc_spec: dict) -> List[str]:
                         config=["user"])
     bidsfiles = layout.get(extension=qc_spec['ImageExtensions'])
     return bidsfiles
+
+
+def get_datman_config(datman_config: str) -> Dict[str, str]:
+    """
+    Get the datman/dashboard configuration
+    """
+    if not datman_config:
+        return {}
+    return load_json(datman_config)
